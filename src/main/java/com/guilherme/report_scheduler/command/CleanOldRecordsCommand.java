@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-
+// ConcreteCommand — responsável por limpar registros antigos do banco
 @Component("cleanOldRecordsCommand")
 public class CleanOldRecordsCommand implements JobCommand{
 

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+// ConcreteCommand — responsável por executar a geração de relatórios
 @Component("generateReportCommand")
 public class GenerateReportCommand implements JobCommand{
 

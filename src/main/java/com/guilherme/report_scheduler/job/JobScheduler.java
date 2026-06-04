@@ -7,6 +7,9 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+
+// Invoker — agenda e delega a execução dos jobs via @Scheduled
+// Não conhece a implementação de cada command, apenas o contrato JobCommand
 @Component
 public class JobScheduler {
 
