@@ -3,17 +3,15 @@ package com.guilherme.report_scheduler.service;
 import com.guilherme.report_scheduler.model.JobExecution;
 import com.guilherme.report_scheduler.model.JobStatus;
 import com.guilherme.report_scheduler.repository.JobExecutionRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 
+import java.util.List;
 
+@Slf4j
 @Service
 public class ReportService {
-
-    private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
 
     private final JobExecutionRepository jobExecutionRepository;
 
@@ -21,31 +19,21 @@ public class ReportService {
         this.jobExecutionRepository = jobExecutionRepository;
     }
 
-    public void generateReport() {
-        logger.info("Generating report...");
+    public void printExecutionSummary() {
+        log.info("Generating job execution summary...");
 
-        try {
 
-            JobExecution execution = JobExecution.builder()
-                    .JobName("GenerateReport")
-                    .status(JobStatus.SUCCESS)
-                    .executedAt(LocalDateTime.now())
-                    .build();
+        List<JobExecution> allExecutions = jobExecutionRepository.findAll();
 
-            jobExecutionRepository.save(execution);
-            logger.info("Report generated successfully.");
+        Long successCount = allExecutions.stream()
+                .filter(e -> e.getStatus() == JobStatus.SUCCESS)
+                .count();
 
-        } catch (Exception e) {
-            logger.error("Error generating report: {}", e.getMessage());
+        Long failedCount = allExecutions.stream()
+                .filter(e -> e.getStatus() == JobStatus.FAILED)
+                .count();
 
-            JobExecution execution = JobExecution.builder()
-                    .JobName("GenerateReport")
-                    .status(JobStatus.FAILED)
-                    .executedAt(LocalDateTime.now())
-                    .errorMessage(e.getMessage())
-                    .build();
-
-            jobExecutionRepository.save(execution);
-        }
+        log.info("Job Execution Summary — Total: {}, Success: {}, Failed: {}",
+                allExecutions.size(), successCount, failedCount);
     }
 }
