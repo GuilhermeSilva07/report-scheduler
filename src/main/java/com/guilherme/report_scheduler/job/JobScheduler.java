@@ -16,7 +16,7 @@ public class JobScheduler {
         this.jobProcessor = jobProcessor;
     }
 
-    @Scheduled(cron = "0/10 * * * * *")
+    @Scheduled(cron = "0 0 8 * * *")
     public void runGereteReport(){
         jobProcessor.execute("generateReportCommand");
     }
