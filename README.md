@@ -1,5 +1,11 @@
 # Report Scheduler
 
+![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4-brightgreen?logo=springboot)
+![Gradle](https://img.shields.io/badge/Gradle-Kotlin%20DSL-blue?logo=gradle)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-blue?logo=postgresql)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 Sistema de agendamento de jobs para monitoramento de pedidos, desenvolvido com Java 21 e Spring Boot 3.
 
 ## Tecnologias
@@ -21,6 +27,22 @@ O projeto utiliza o **Command Pattern** para organizar os jobs agendados:
 - `GenerateReportCommand` — gera relatório de pedidos pendentes
 - `CleanOldRecordsCommand` — limpa pedidos cancelados antigos
 
+## Arquitetura
+
+```mermaid
+flowchart TD
+    A[JobScheduler\n@Scheduled] -->|execute jobName| B[JobProcessor\njobsMap]
+    B -->|busca no mapa| C{Job existe?}
+    C -->|Sim| D[JobCommand\ninterface]
+    C -->|Não| E[Log de erro\nretorna]
+    D --> F[GenerateReportCommand]
+    D --> G[CleanOldRecordsCommand]
+    F -->|generatePendingOrdersReport| H[OrderService]
+    G -->|cleanCancelledOrders| H
+    H --> I[(PostgreSQL)]
+    B -->|salva resultado| J[(job_executions)]
+```
+
 ## Jobs
 
 ### GenerateReportCommand
@@ -28,6 +50,16 @@ Executa todo dia às 08h. Busca pedidos com status `PENDING` criados há mais de
 
 ### CleanOldRecordsCommand
 Executa todo domingo à meia-noite. Deleta pedidos com status `CANCELLED` criados há mais de 30 dias.
+
+## Endpoints
+
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/api/orders` | Lista todos os pedidos |
+| GET | `/api/orders/pending` | Lista pedidos PENDING com mais de 24h |
+| GET | `/api/job-executions` | Lista todas as execuções dos jobs |
+| GET | `/api/job-executions/summary` | Resumo de execuções com total, sucesso e falhas |
+
 
 ## Como executar
 
