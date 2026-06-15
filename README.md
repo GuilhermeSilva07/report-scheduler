@@ -29,18 +29,17 @@ O projeto utiliza o **Command Pattern** para organizar os jobs agendados:
 
 ## Arquitetura
 
+## Arquitetura
+
 ```mermaid
 flowchart TD
-    A[JobScheduler\n@Scheduled] -->|execute jobName| B[JobProcessor\njobsMap]
-    B -->|busca no mapa| C{Job existe?}
-    C -->|Sim| D[JobCommand\ninterface]
-    C -->|Não| E[Log de erro\nretorna]
-    D --> F[GenerateReportCommand]
-    D --> G[CleanOldRecordsCommand]
-    F -->|generatePendingOrdersReport| H[OrderService]
-    G -->|cleanCancelledOrders| H
-    H --> I[(PostgreSQL)]
-    B -->|salva resultado| J[(job_executions)]
+    JobScheduler -->|executa| JobProcessor
+    JobProcessor -->|busca no mapa| GenerateReportCommand
+    JobProcessor -->|busca no mapa| CleanOldRecordsCommand
+    GenerateReportCommand -->|delega| OrderService
+    CleanOldRecordsCommand -->|delega| OrderService
+    OrderService --> PostgreSQL
+    JobProcessor -->|salva resultado| job_executions
 ```
 
 ## Jobs
